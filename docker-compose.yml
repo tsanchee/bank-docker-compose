@@ -1,0 +1,84 @@
+version: '3.8'
+
+networks:
+  bank-network:
+    driver: bridge
+
+services:
+  eureka-service:
+    image: tonysanes/registry-service:1.0.0
+    restart: always
+    container_name: eureka-service
+    ports: 
+      - '8761:8761'
+    hostname: config-service
+    networks: 
+      - bank-network
+
+  config-service:
+    image: tonysanes/config-service:1.0.0
+    restart: always
+    container_name: config-service
+    ports: 
+      - '8888:8888'
+    hostname: config-service
+    environment:
+      - EUREKA_URI=http://eureka-service:8761/eureka
+    depends_on:
+      - eureka-service
+    networks: 
+      - bank-network
+    links:
+      - eureka-service
+
+  #gateway-service:
+  #  image: tonysanes/gateway-service:1.0.0
+  #  container_name: gateway-service
+  #  ports: 
+  #    - '9090:9090'
+  #  environment:
+  #    - DEUREKA_URI=http://eureka-service:8761/eureka
+  #  depends_on:
+  #    - 'eureka-service'
+  #    - 'config-service'
+  #  networks: 
+  #    - 'bank-network'
+#
+  #products-service:
+  #  image: tonysanes/bank-products-ms:1.0.0
+  #  container_name: products-service
+  #  ports: 
+  #    - '8010:8010'
+  #  environment:
+  #    - DEUREKA_URI=http://eureka-service:8761/eureka
+  #  depends_on:
+  #    - 'eureka-service'
+  #    - 'config-service'
+  #  networks: 
+  #    - 'bank-network'
+#
+  #transactions-service:
+  #  image: tonysanes/bank-transactions-ms:1.0.0
+  #  container_name: transactions-service
+  #  ports: 
+  #    - '8020:8020'
+  #  environment:
+  #    - DEUREKA_URI=http://eureka-service:8761/eureka
+  #  depends_on:
+  #    - 'eureka-service'
+  #    - 'config-service'
+  #  networks: 
+  #    - 'bank-network'
+#
+  #customers-service:
+  #  image: tonysanes/bank-customers-ms:1.0.0
+  #  container_name: customers-service
+  #  ports: 
+  #    - '8030:8030'
+  #  environment:
+  #    - DEUREKA_URI=http://eureka-service:8761/eureka
+  #  depends_on:
+  #    - 'eureka-service'
+  #    - 'config-service'
+  #  networks: 
+  #    - 'bank-network'
